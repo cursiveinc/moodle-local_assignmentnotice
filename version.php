@@ -25,10 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_assignmentnotice';
-$plugin->version = 2024012603;
+$plugin->version = 2025013100;
 $plugin->requires = 2022112800; // Moodle 4.1.
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.1.0';
+$plugin->release = '0.2.0';
 $plugin->dependencies = [
     'mod_assign' => 2022112800,
 ];

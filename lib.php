@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Add fields to the assignment settings form.
  *
@@ -46,8 +44,11 @@ function local_assignmentnotice_coursemodule_standard_elements($formwrapper, $mf
     }
 
     // Add header.
-    $mform->addElement('header', 'assignmentnotice_header',
-        get_string('assignmentnotice_header', 'local_assignmentnotice'));
+    $mform->addElement(
+        'header',
+        'assignmentnotice_header',
+        get_string('assignmentnotice_header', 'local_assignmentnotice')
+    );
 
     // AI Assessment Scale level dropdown.
     $aiasoptions = [
@@ -58,8 +59,12 @@ function local_assignmentnotice_coursemodule_standard_elements($formwrapper, $mf
         4 => get_string('aias_level4', 'local_assignmentnotice'),
         5 => get_string('aias_level5', 'local_assignmentnotice'),
     ];
-    $mform->addElement('select', 'assignmentnotice_aiaslevel',
-        get_string('aiaslevel', 'local_assignmentnotice'), $aiasoptions);
+    $mform->addElement(
+        'select',
+        'assignmentnotice_aiaslevel',
+        get_string('aiaslevel', 'local_assignmentnotice'),
+        $aiasoptions
+    );
     $mform->setDefault('assignmentnotice_aiaslevel', 0);
     $mform->addHelpButton('assignmentnotice_aiaslevel', 'aiaslevel', 'local_assignmentnotice');
 
@@ -70,8 +75,12 @@ function local_assignmentnotice_coursemodule_standard_elements($formwrapper, $mf
         'success' => get_string('bannertype_success', 'local_assignmentnotice'),
         'danger' => get_string('bannertype_danger', 'local_assignmentnotice'),
     ];
-    $mform->addElement('select', 'assignmentnotice_bannertype',
-        get_string('bannertype', 'local_assignmentnotice'), $banneroptions);
+    $mform->addElement(
+        'select',
+        'assignmentnotice_bannertype',
+        get_string('bannertype', 'local_assignmentnotice'),
+        $banneroptions
+    );
     $mform->setDefault('assignmentnotice_bannertype', 'info');
     $mform->addHelpButton('assignmentnotice_bannertype', 'bannertype', 'local_assignmentnotice');
 
@@ -97,6 +106,7 @@ function local_assignmentnotice_coursemodule_standard_elements($formwrapper, $mf
  *
  * @param stdClass $data The form data
  * @param stdClass $course The course object
+ * @return stdClass The form data
  */
 function local_assignmentnotice_coursemodule_edit_post_actions($data, $course) {
     global $DB;
@@ -156,7 +166,7 @@ function local_assignmentnotice_coursemodule_edit_post_actions($data, $course) {
  * @return string HTML to inject before footer
  */
 function local_assignmentnotice_before_footer() {
-    global $PAGE, $DB;
+    global $PAGE, $DB, $OUTPUT;
 
     // Check if we're on an assignment page.
     if ($PAGE->context->contextlevel !== CONTEXT_MODULE) {
@@ -183,64 +193,16 @@ function local_assignmentnotice_before_footer() {
         return '';
     }
 
-    $level = (int) $record->aiaslevel;
-    $bannertype = s($record->bannertype);
+    // Create the renderable and render it using the Output API.
+    $banner = new \local_assignmentnotice\output\banner(
+        (int) $record->aiaslevel,
+        $record->bannertype
+    );
 
-    // Get the strings.
-    $title = s(get_string("aias_level{$level}_title", 'local_assignmentnotice'));
-    $studenttext = s(get_string("aias_level{$level}_student", 'local_assignmentnotice'));
-
-    // Build the banner HTML.
-    $leveltext = "AI Assessment Scale - Level {$level}: {$title}";
-
-    $bannercontent = html_writer::tag('strong', $leveltext);
-    $bannercontent .= html_writer::empty_tag('br');
-    $bannercontent .= html_writer::tag('span', $studenttext);
-
-    $banner = html_writer::div($bannercontent, "alert alert-{$bannertype}", [
-        'role' => 'alert',
-        'id' => 'local-assignmentnotice-banner',
-    ]);
-
-    $container = html_writer::div($banner, 'local-assignmentnotice-container mb-3', [
-        'id' => 'local-assignmentnotice-container',
-    ]);
-
-    // JavaScript to move the banner to the right place.
-    $js = <<<JS
-<script>
-(function() {
-    var container = document.getElementById('local-assignmentnotice-container');
-    if (!container) return;
-
-    var selectors = [
-        '.submissionstatustable',
-        '#intro',
-        '[data-region="assignment-info"]',
-        '.submissionstatussubmitted',
-        '.submissionstatusnotsubmitted',
-        '#id_onlinetext_editor',
-        '[data-fieldtype="editor"]',
-        '#id_files_filemanager',
-        '[data-fieldtype="filemanager"]',
-        '#mform1',
-        '.activity-header',
-        '#region-main .card-body',
-        '#region-main-box'
-    ];
-
-    for (var i = 0; i < selectors.length; i++) {
-        var target = document.querySelector(selectors[i]);
-        if (target) {
-            target.parentNode.insertBefore(container, target);
-            return;
-        }
-    }
-})();
-</script>
-JS;
-
-    return $container . $js;
+    return $OUTPUT->render_from_template(
+        'local_assignmentnotice/banner',
+        $banner->export_for_template($OUTPUT)
+    );
 }
 
 /**
