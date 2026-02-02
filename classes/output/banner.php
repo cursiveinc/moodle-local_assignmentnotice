@@ -16,10 +16,10 @@
 
 namespace local_assignmentnotice\output;
 
+use core\output\named_templatable;
 use renderable;
 use renderer_base;
 use stdClass;
-use templatable;
 
 /**
  * Renderable for the AI Assessment Scale banner.
@@ -28,7 +28,7 @@ use templatable;
  * @copyright  2024 Your Name <your@email.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class banner implements renderable, templatable {
+class banner implements renderable, named_templatable {
     /** @var int The AI Assessment Scale level (1-5) */
     private int $level;
 
@@ -44,6 +44,16 @@ class banner implements renderable, templatable {
     public function __construct(int $level, string $bannertype) {
         $this->level = $level;
         $this->bannertype = $bannertype;
+    }
+
+    /**
+     * Get the name of the template to use for this renderable.
+     *
+     * @param renderer_base $renderer The renderer
+     * @return string The template name
+     */
+    public function get_template_name(renderer_base $renderer): string {
+        return 'local_assignmentnotice/banner';
     }
 
     /**

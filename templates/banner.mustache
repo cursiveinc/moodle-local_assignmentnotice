@@ -44,7 +44,5 @@
     </div>
 </div>
 {{#js}}
-require(['local_assignmentnotice/banner'], function(Banner) {
-    Banner.init();
-});
+require(['local_assignmentnotice/banner'], (Banner) => Banner.init());
 {{/js}}

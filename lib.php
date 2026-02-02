@@ -199,10 +199,9 @@ function local_assignmentnotice_before_footer() {
         $record->bannertype
     );
 
-    return $OUTPUT->render_from_template(
-        'local_assignmentnotice/banner',
-        $banner->export_for_template($OUTPUT)
-    );
+    // Render using the Output API - the named_templatable interface
+    // tells Moodle which template to use automatically.
+    return $OUTPUT->render($banner);
 }
 
 /**
