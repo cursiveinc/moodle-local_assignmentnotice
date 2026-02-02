@@ -17,7 +17,7 @@
  * Banner positioning module for local_assignmentnotice.
  *
  * @module     local_assignmentnotice/banner
- * @copyright  2024 Your Name <your@email.com>
+ * @copyright  2026 Joseph Thibault <joe@cursivetechnology.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
