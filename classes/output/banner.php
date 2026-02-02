@@ -28,7 +28,7 @@ use stdClass;
  * @copyright  2024 Your Name <your@email.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class banner implements renderable, named_templatable {
+class banner implements named_templatable, renderable {
     /** @var int The AI Assessment Scale level (1-5) */
     private int $level;
 
